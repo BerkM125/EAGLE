@@ -1,6 +1,13 @@
+/*
+* EXTERNAL INTERFACING CPP FILE
+* Contains functions pertaining to and providing functionality for
+* interfaces, such as keyboard and mouse. Also contains sample player movement
+* and camera movement functions that can be bound to the main OpenGL process. 
+*/
 //Standard libraries
 #include <GL/glut.h>
 #include <stdio.h>
+#include <math.h>
 #include <iostream>
 //External engine dependencies
 #include "figureslib.hpp"
@@ -9,7 +16,9 @@
 
 GLfloat swidth = 700;
 GLfloat sheight = 700;
-
+extern sphere player;
+extern cylinder player2;
+extern cube player3;
 void mousecameracontrol(int xx, int yy) {
     static GLfloat px = 0;
     static GLfloat py = 0;
@@ -48,6 +57,11 @@ void normalkeycameracontrol(unsigned char key, int xx, int yy) {
         angle -= angleincrement;
         lx = sin(angle);
         lz = -cos(angle);
+    }
+    if (key == 'p') {
+        player.renderfigure(180, 180, 255, 255, GL_LINE_STRIP);
+        player2.renderfigure(180, 180, 255, 255, GL_LINE_STRIP);
+        player3.renderfigure(180, 180, 255, 255, GL_TRIANGLE_STRIP);
     }
     if (key == 27)
         exit(0);

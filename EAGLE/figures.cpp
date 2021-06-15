@@ -1,3 +1,9 @@
+/*
+* 3D FIGURES + OBJECTS CPP FILE
+* Contains definitions of all three-dimensional-based
+* classes and functions involving those classes. Declarations
+* of the classes and functions here are located in "figureslib.hpp".
+*/
 //Standard libraries
 #include <GL/glut.h>
 #include <stdio.h>
@@ -10,7 +16,7 @@
 //Demonstrational purpose grid line rendering
 void gridlines(double step) {
     glBegin(GL_LINES);
-    glColor3f(0.9f, 0.9f, 0.9f);
+    glColor4f(0.9f, 0.9f, 0.9f, 0);
     for (double x = -100; x < 100; x+=step) {
         glVertex3f(x, 0.0f, -100.0f);
         glVertex3f(x, 0.0f, 100.0f);
@@ -33,7 +39,64 @@ void RenderString(float x, float y, float z, void* font, const char* string) {
     }
 }
 
-cylinder::cylinder(GLfloat rad, GLfloat hgt, GLfloat x, GLfloat y, GLfloat z, GLfloat vertices) {
+void color4ub::setcolor4ub(GLubyte red, GLubyte blue, GLubyte green, GLubyte alpha) {
+    R = red;
+    B = blue;
+    G = green;
+    A = alpha;
+}
+
+void vertex3d::setvertex3d(GLfloat xcrd, GLfloat ycrd, GLfloat zcrd) {
+    xcoord = xcrd;
+    ycoord = ycrd;
+    zcoord = zcrd;
+}
+
+void object3d::pushvertex3f(GLfloat xcoord, GLfloat ycoord, GLfloat zcoord) {
+    vertex3d tpoint(xcoord, ycoord, zcoord);
+    vertexbuf.push_back(tpoint);
+}
+
+void object3d::rendervertexbuffer(GLenum primtype) {
+    glColor4ub(objcolor.R, objcolor.G, objcolor.B, objcolor.A);
+    glBegin(primtype);
+    for (int n = 0; n < vertexbuf.size(); n++)
+        glVertex3f(vertexbuf[n].xcoord, vertexbuf[n].ycoord, vertexbuf[n].zcoord);
+    glEnd();
+}
+
+void object3d::rendervertexbuffer(GLubyte R, GLubyte G, GLubyte B, GLubyte A, GLenum primtype) {
+    glColor4ub(R, G, B, A);
+    glBegin(primtype);
+    for (int n = 0; n < vertexbuf.size(); n++)
+        glVertex3f(vertexbuf[n].xcoord, vertexbuf[n].ycoord, vertexbuf[n].zcoord);
+    glEnd();
+}
+
+void object3d::importvertex3dbuf(const char* fn, unsigned int num) {
+    FILE* objfp;
+    unsigned int index = 0;
+    float xcrd, ycrd, zcrd;
+    char line[64] = "";
+    vertex3d tpoint;
+    objfp = fopen(fn, "r+");
+    if (!objfp) return;
+    vertexbuf.clear();
+    while (index < num) {
+        {
+            fscanf(objfp, "v %f %f %f\n", &xcrd, &ycrd, &zcrd);
+            tpoint.xcoord = xcrd;
+            tpoint.ycoord = ycrd;
+            tpoint.zcoord = zcrd;
+            //printf("%s %f %f %f\n", line, tpoint.xcoord, tpoint.ycoord, tpoint.zcoord);
+            vertexbuf.push_back(tpoint);
+        }
+        index++;
+    }
+    fclose(objfp);
+}
+
+cylinder::cylinder(GLfloat x, GLfloat y, GLfloat z, GLfloat rad, GLfloat hgt, GLfloat vertices) {
     radius = rad;
     height = hgt;
     xcoord = x;
@@ -42,7 +105,7 @@ cylinder::cylinder(GLfloat rad, GLfloat hgt, GLfloat x, GLfloat y, GLfloat z, GL
     vertexnum = vertices;
 }
 
-void cylinder::drawCylinder(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
+void cylinder::renderfigure(GLubyte R, GLubyte G, GLubyte B, GLubyte A, GLenum primtype) {
     GLfloat x = xcoord;
     GLfloat y = ycoord;
     GLfloat z = zcoord;
@@ -50,33 +113,40 @@ void cylinder::drawCylinder(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
     GLfloat step = (6.33 / vertexnum);
     GLfloat dblPI = 2 * PI;
     GLfloat colortint = 40;
-    glColor3ub(R - colortint, G - colortint, B - colortint);
+    glColor4ub(R - colortint, G - colortint, B - colortint, A);
     glBegin(primtype);
     angle = 0.0;
+    vertexbuf.clear();
     while (angle < dblPI) {
         x = (radius * cos(angle)) + xcoord;
         y = (radius * sin(angle)) - ycoord;
         glVertex3f(x, y, height + z);
+        pushvertex3f(x, y, height + z);
         glVertex3f(x, y, z);
+        pushvertex3f(x, y, z);
         angle = angle + step;
     }
     glVertex3f(radius + xcoord, -ycoord, height + z);
+    pushvertex3f(radius + xcoord, -ycoord, height + z);
     glVertex3f(radius + xcoord, -ycoord, z);
+    pushvertex3f(radius + xcoord, -ycoord, z);
     glEnd();
-    glColor3ub(R, G, B);
+    glColor4ub(R, G, B, A);
     glBegin(GL_POLYGON);
     angle = 0.0;
     while (angle < dblPI) {
         x = (radius * cos(angle)) + xcoord;
         y = (radius * sin(angle)) - ycoord;
         glVertex3f(x, y, z);
+        pushvertex3f(x, y, z);
         angle = angle + step;
     }
     glVertex3f(radius + xcoord, -ycoord, z);
+    pushvertex3f(radius + xcoord, -ycoord, z);
     glEnd();
 }
 
-cone::cone(GLfloat rad, GLfloat hgt, GLfloat x, GLfloat y, GLfloat z, GLfloat vertices) {
+cone::cone(GLfloat x, GLfloat y, GLfloat z, GLfloat rad, GLfloat hgt, GLfloat vertices) {
     radius = rad;
     height = hgt;
     xcoord = x;
@@ -85,7 +155,7 @@ cone::cone(GLfloat rad, GLfloat hgt, GLfloat x, GLfloat y, GLfloat z, GLfloat ve
     vertexnum = vertices;
 }
 
-void cone::drawCone(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
+void cone::renderfigure(GLubyte R, GLubyte G, GLubyte B, GLubyte A, GLenum primtype) {
     GLfloat x = xcoord;
     GLfloat y = ycoord;
     GLfloat z = zcoord;
@@ -93,27 +163,32 @@ void cone::drawCone(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
     GLfloat step = (6.33 / vertexnum);
     GLfloat dblPI = 2 * PI;
     GLfloat colortint = 40;
-    glColor3ub(R - colortint, G - colortint, B - colortint);
+    glColor4ub(R - colortint, G - colortint, B - colortint, A);
     glBegin(primtype);
     angle = 0.0;
+    vertexbuf.clear();
     while (angle < dblPI) {
         x = (radius * cos(angle)) + xcoord;
         y = (radius * sin(angle)) - ycoord;
         glVertex3f(x, y, height + z);
+        pushvertex3f(x, y, height + z);
         glVertex3f(xcoord, -ycoord, z);
+        pushvertex3f(xcoord, -ycoord, z);
         angle = angle + step;
     }
     glEnd();
-    glColor3ub(R, G, B);
+    glColor4ub(R, G, B, A);
     glBegin(GL_POLYGON);
     angle = 0.0;
     while (angle < dblPI) {
         x = (radius * cos(angle)) + xcoord;
         y = (radius * sin(angle)) - ycoord;
         glVertex3f(x, y, height + z);
+        pushvertex3f(x, y, height + z);
         angle = angle + step;
     }
     glVertex3f(radius + xcoord, -ycoord, height + z);
+    pushvertex3f(radius + xcoord, -ycoord, height + z);
     glEnd();
 }
 
@@ -124,33 +199,50 @@ cube::cube(GLfloat x, GLfloat y, GLfloat z, GLfloat cw) {
     cubewidth = cw;
 }
 
-void cube::drawCube(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
+void cube::renderfigure(GLubyte R, GLubyte G, GLubyte B, GLubyte A, GLenum primtype) {
     GLfloat x = xcoord;
     GLfloat y = ycoord;
     GLfloat z = zcoord;
     GLfloat colortint = 0;
-    glColor3ub(R - colortint, G - colortint, B - colortint);
+    vertexbuf.clear();
+    glColor4ub(R - colortint, G - colortint, B - colortint, A);
     glBegin(primtype);
     glVertex3f(x, y, z);
+    pushvertex3f(x, y, z);
     glVertex3f(x, y, cubewidth + z);
+    pushvertex3f(x, y, cubewidth + z);
     glVertex3f(x + cubewidth, y, z);
+    pushvertex3f(x + cubewidth, y, z);
     glVertex3f(x + cubewidth, y, cubewidth + z);
+    pushvertex3f(x + cubewidth, y, cubewidth + z);
     glVertex3f(x + cubewidth, y + cubewidth, z);
+    pushvertex3f(x + cubewidth, y + cubewidth, z);
     glVertex3f(x + cubewidth, y + cubewidth, cubewidth + z);
+    pushvertex3f(x + cubewidth, y + cubewidth, cubewidth + z);
     glVertex3f(x, y + cubewidth, z);
+    pushvertex3f(x, y + cubewidth, z);
     glVertex3f(x, y + cubewidth, cubewidth + z);
+    pushvertex3f(x, y + cubewidth, cubewidth + z);
     glVertex3f(x, y, z);
+    pushvertex3f(x, y, z);
     glVertex3f(x, y + cubewidth, z);
+    pushvertex3f(x, y + cubewidth, z);
     glVertex3f(x, y, cubewidth + z);
+    pushvertex3f(x, y, cubewidth + z);
     glVertex3f(x, y + cubewidth, cubewidth + z);
+    pushvertex3f(x, y + cubewidth, cubewidth + z);
     glVertex3f(x, y, z);
+    pushvertex3f(x, y, z);
     glVertex3f(x + cubewidth, y, z);
+    pushvertex3f(x + cubewidth, y, z);
     glVertex3f(x, y + cubewidth, z);
+    pushvertex3f(x, y + cubewidth, z);
     glVertex3f(x + cubewidth, y + cubewidth, z);
+    pushvertex3f(x + cubewidth, y + cubewidth, z);
     glEnd();
 }
 
-void sphere::rendersphere(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
+void sphere::renderfigure(GLubyte R, GLubyte G, GLubyte B, GLubyte A, GLenum primtype) {
     GLfloat x = 0.0;
     GLfloat y = 0.0;
     GLfloat z = 0.0;
@@ -162,8 +254,9 @@ void sphere::rendersphere(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
     GLfloat stackangle = 0.0;
     GLfloat sectorangle = 0.0;
     GLfloat colortint = 0;
-    glColor3ub(R - colortint, G - colortint, B - colortint);
+    glColor4ub(R - colortint, G - colortint, B - colortint, A);
     glBegin(primtype);
+    vertexbuf.clear();
     for (int i = 0; i <= stacks; ++i) {
         stackangle = PI / 2 - i * stackstep;
         xy = radius * cosf(stackangle);
@@ -173,6 +266,7 @@ void sphere::rendersphere(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
             x = xy * cosf(sectorangle) * lengthInv;
             y = xy * sinf(sectorangle) * lengthInv;
             glVertex3f(x + xcoord, y + ycoord, z + zcoord);
+            pushvertex3f(x + xcoord, y + ycoord, z + zcoord);
         }
     }
     glEnd();
@@ -187,10 +281,10 @@ sphere::sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLint sec, GLint stk)
     stacks = stk;
 }
 
-void triprism::drawPrism(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
-    GLfloat colortint = 40;
+void triprism::renderfigure(GLubyte R, GLubyte G, GLubyte B, GLubyte A, GLenum primtype) {
+    GLfloat colortint = 40; //can be changed
     glBegin(primtype);
-    glColor3ub(R - colortint, G - colortint, B - colortint);
+    glColor4ub(R - colortint, G - colortint, B - colortint, A);
     //Side faces
     glVertex3f(xcoord, ycoord, zcoord);
     glVertex3f(xcoord, ycoord-height, zcoord);
@@ -200,8 +294,17 @@ void triprism::drawPrism(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
     glVertex3f(xcoord+horizlength, ycoord - height, zcoord);
     glVertex3f(xcoord, ycoord, zcoord);
     glVertex3f(xcoord, ycoord - height, zcoord);
+
+    pushvertex3f(xcoord, ycoord, zcoord);
+    pushvertex3f(xcoord, ycoord - height, zcoord);
+    pushvertex3f(xcoord, ycoord, zcoord + vertlength);
+    pushvertex3f(xcoord, ycoord - height, zcoord + vertlength);
+    pushvertex3f(xcoord + horizlength, ycoord, zcoord);
+    pushvertex3f(xcoord + horizlength, ycoord - height, zcoord);
+    pushvertex3f(xcoord, ycoord, zcoord);
+    pushvertex3f(xcoord, ycoord - height, zcoord);
     //Top and bottom faces
-    glColor3ub(R, G, B);
+    glColor4ub(R, G, B, A);
     glVertex3f(xcoord+ horizlength, ycoord, zcoord);
     glVertex3f(xcoord, ycoord, zcoord+ vertlength);
     glVertex3f(xcoord, ycoord, zcoord);
@@ -209,6 +312,14 @@ void triprism::drawPrism(GLubyte R, GLubyte G, GLubyte B, GLenum primtype) {
     glVertex3f(xcoord+ horizlength, ycoord-height, zcoord);
     glVertex3f(xcoord, ycoord-height, zcoord+ vertlength);
     glVertex3f(xcoord, ycoord-height, zcoord);
+
+    pushvertex3f(xcoord + horizlength, ycoord, zcoord);
+    pushvertex3f(xcoord, ycoord, zcoord + vertlength);
+    pushvertex3f(xcoord, ycoord, zcoord);
+
+    pushvertex3f(xcoord + horizlength, ycoord - height, zcoord);
+    pushvertex3f(xcoord, ycoord - height, zcoord + vertlength);
+    pushvertex3f(xcoord, ycoord - height, zcoord);
     glEnd();
 
 }
