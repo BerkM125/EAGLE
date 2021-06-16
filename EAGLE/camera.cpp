@@ -29,6 +29,9 @@ float viewlimit = 100000;
 float viewmin = 1;
 float yfov = 45;
 
+GLfloat swidth = 700;
+GLfloat sheight = 700;
+
 void rendercameraview (void) {
     gluLookAt(camx, camy, camz, camx + lx, camy + ly, camz + lz, 0.0, 1.0f, 0.0);
 }
@@ -44,4 +47,58 @@ void changeSize(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
     swidth = w;
     sheight = h;
+}
+
+void mousecameracontrol(int xx, int yy) {
+    static GLfloat px = 0;
+    static GLfloat py = 0;
+    GLfloat x1 = xx / (GLfloat)(swidth / 2) - 1.0;
+    GLfloat y1 = yy / (GLfloat)(sheight / 2) - 1.0;
+    if (px == 0 && py == 0) {
+        px = x1;
+        py = y1;
+    }
+    else {
+        angle += (x1 - px) * yawsensitivity;
+        lx = sin(angle);
+        lz = -cos(angle);
+        ly += (py - y1) * pitchsensitivity;
+        px = x1;
+        py = y1;
+    }
+    return;
+}
+
+void normalkeycameracontrol(unsigned char key, int xx, int yy) {
+    if (key == 'w') { // W
+        camx += lx * movincrement;
+        camz += lz * movincrement;
+    }
+    if (key == 's') { // S
+        camx -= lx * movincrement;
+        camz -= lz * movincrement;
+    }
+    if (key == 'd') { // D
+        angle += angleincrement;
+        lx = sin(angle);
+        lz = -cos(angle);
+    }
+    if (key == 'a') { // A
+        angle -= angleincrement;
+        lx = sin(angle);
+        lz = -cos(angle);
+    }
+    if (key == 27)
+        exit(0);
+}
+
+void arrowkeycameracontrol(int key, int xx, int yy) {
+    switch (key) {
+    case GLUT_KEY_UP:
+        camy += movincrement;
+        break;
+    case GLUT_KEY_DOWN:
+        camy -= movincrement;
+        break;
+    }
 }

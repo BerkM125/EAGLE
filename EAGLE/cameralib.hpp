@@ -16,3 +16,6 @@ extern float camy;
 extern float camz;
 extern void rendercameraview(void);
 extern void changeSize(int w, int h);
+extern void mousecameracontrol(int xx, int yy);
+extern void normalkeycameracontrol(unsigned char key, int xx, int yy);
+extern void arrowkeycameracontrol(int key, int xx, int yy);
