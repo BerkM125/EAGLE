@@ -16,9 +16,8 @@
 
 GLfloat swidth = 700;
 GLfloat sheight = 700;
-extern sphere player;
-extern cylinder player2;
-extern cube player3;
+extern object3d plane, car, ball;
+
 void mousecameracontrol(int xx, int yy) {
     static GLfloat px = 0;
     static GLfloat py = 0;
@@ -58,10 +57,10 @@ void normalkeycameracontrol(unsigned char key, int xx, int yy) {
         lx = sin(angle);
         lz = -cos(angle);
     }
+    //Just here for demo purposes
     if (key == 'p') {
-        player.renderfigure(180, 180, 255, 255, GL_LINE_STRIP);
-        player2.renderfigure(180, 180, 255, 255, GL_LINE_STRIP);
-        player3.renderfigure(180, 180, 255, 255, GL_TRIANGLE_STRIP);
+        car.translateobj3f(0, 0, 0.1);
+        ball.translateobj3f(0, -0.1, -0.1);
     }
     if (key == 27)
         exit(0);
