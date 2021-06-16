@@ -10,7 +10,7 @@
 #include "interfacelib.hpp"
 
 //CROSS-FILE VALUES: Freely change these
-char WINDOWTITLE[BUFSIZE] = "Car and Ball";
+char WINDOWTITLE[BUFSIZE] = "EAGLE Demo";
 unsigned int DISPLAYFLAGS = GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA;
 unsigned int ENABLEFLAGS = GL_DEPTH_TEST | GL_BLEND | GL_ALPHA_TEST;
 
