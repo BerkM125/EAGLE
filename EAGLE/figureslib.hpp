@@ -31,6 +31,12 @@ public:
 	void setcolor4ub(GLubyte red, GLubyte blue, GLubyte green, GLubyte alpha);
 };
 
+class vertex2d {
+public:
+	GLfloat xcoord;
+	GLfloat ycoord;
+};
+
 class vertex3d {
 public:
 	GLfloat xcoord;
@@ -51,11 +57,15 @@ public:
 	GLfloat ycoord;
 	GLfloat zcoord;
 	color4ub objcolor;
+	std::vector<vertex2d> uvbuf;
 	std::vector<vertex3d> vertexbuf; //not to be confused with a VBO or VAO
+	std::vector<vertex3d> normalsbuf;
 	void pushvertex3f(GLfloat xcoord, GLfloat ycoord, GLfloat zcoord);
 	void translateobj3f (GLfloat xmov, GLfloat ymov, GLfloat zmov);
 	void scaleobj3d (GLfloat sf);
-	void importvertex3dbuf(const char* fn, unsigned int num);
+	void importvertex3dbuf(const char* fn);
+	void importmesh3d(const char* fn);
+	void rendermesh3d(GLubyte R, GLubyte G, GLubyte B, GLubyte A, GLenum primtype);
 	void rendervertexbuffer(GLenum primtype);
 	void rendervertexbuffer(GLubyte R, GLubyte G, GLubyte B, GLubyte A, GLenum primtype);
 };

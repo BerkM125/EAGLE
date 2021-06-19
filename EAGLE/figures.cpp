@@ -5,6 +5,8 @@
 * of the classes and functions here are located in "figureslib.hpp".
 */
 //Standard libraries
+#define GLEW_STATIC
+#include <GL/glew.h>
 #include <GL/glut.h>
 #include <stdio.h>
 #include <iostream>
@@ -12,6 +14,7 @@
 #include "figureslib.hpp"
 #include "cameralib.hpp"
 #include "interfacelib.hpp"
+#include "shaderslib.hpp"
 
 //Demonstrational purpose grid line rendering
 void gridlines(double step) {
@@ -73,18 +76,105 @@ void object3d::rendervertexbuffer(GLubyte R, GLubyte G, GLubyte B, GLubyte A, GL
     glEnd();
 }
 
-void object3d::importvertex3dbuf(const char* fn, unsigned int num) {
-    FILE* objfp;
+void object3d::rendermesh3d(GLubyte R, GLubyte G, GLubyte B, GLubyte A, GLenum primtype) {
+    glColor4ub(R, G, B, A);
+    glBegin(primtype);
+    for (int n = 0; n < vertexbuf.size(); n++)
+        glVertex3f(vertexbuf[n].xcoord, vertexbuf[n].ycoord, vertexbuf[n].zcoord);
+    glEnd();
+}
+
+void object3d::importmesh3d(const char* fn) {
+    FILE *objfp;
+    char line[64];
+    std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
+    std::vector< vertex3d > tmpvertices;
+    std::vector< vertex3d > tmpnormals;
+    std::vector< vertex2d > tmpuvs;
+    vertex3d tpoint;
+    vertex2d tcoord;
     unsigned int index = 0;
     float xcrd, ycrd, zcrd;
-    char line[64] = "";
+
+    objfp = fopen(fn, "r+");
+    if (!objfp) return;
+    uvbuf.clear();
+    normalsbuf.clear();
+    vertexbuf.clear();
+    while (fgets(line, 64, objfp)) {
+        if (line[0] == 'v' && line[1] == ' ') {
+            sscanf(line, "v %f %f %f\n", &xcrd, &ycrd, &zcrd);
+            tpoint.xcoord = xcrd;
+            tpoint.ycoord = ycrd;
+            tpoint.zcoord = zcrd;
+            tmpvertices.push_back(tpoint);
+        }
+        else if (line[0] == 'v' && line[1] == 'n') {
+            sscanf(line, "vn %f %f %f\n", &xcrd, &ycrd, &zcrd);
+            tpoint.xcoord = xcrd;
+            tpoint.ycoord = ycrd;
+            tpoint.zcoord = zcrd;
+            tmpnormals.push_back(tpoint);
+        }
+        else if (line[0] == 'v' && line[1] == 't') {
+            sscanf(line, "vt %f %f\n", &xcrd, &ycrd);
+            tcoord.xcoord = xcrd;
+            tcoord.ycoord = ycrd;
+            tmpuvs.push_back(tcoord);
+        }
+        else if (line[0] == 'f' && line[1] == ' ') {
+            std::string vertex1, vertex2, vertex3;
+            unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+            int matches = sscanf(line, "f %d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
+            if(matches == 9) {
+                //printf("f %d/%d/%d %d/%d/%d %d/%d/%d\n", vertexIndex[0], uvIndex[0], normalIndex[0], vertexIndex[1], uvIndex[1], normalIndex[1], vertexIndex[2], uvIndex[2], normalIndex[2]);
+                for(int x = 0; x < 3; x++) {
+                    vertexIndices.push_back(vertexIndex[x]);
+                    uvIndices.push_back(uvIndex[x]);
+                    normalIndices.push_back(normalIndex[x]);
+                }
+            }
+            else {
+                std::cout << "Face formatting in OBJ went wrong at index " << index << " for " << fn << ", skipping indice..." << std::endl;
+            }
+        }
+        index++;
+    }
+    //This checks if the faces/indices were in the right formatted and were stored. If not, resort to simply the vertices
+    if(vertexIndices.size() > 1) {
+        for (int i = 0; i < vertexIndices.size(); i++) {
+            unsigned int vertexIndex = vertexIndices[i];
+            unsigned int uvIndex = uvIndices[i];
+            unsigned int normalIndex = normalIndices[i];
+            vertex3d vertex = tmpvertices[vertexIndex-1];
+            vertex2d uv = tmpuvs[uvIndex-1];
+            vertex3d normal = tmpnormals[normalIndex-1];
+            vertexbuf.push_back(vertex);
+            uvbuf.push_back(uv);
+            normalsbuf.push_back(normal);
+        }
+    }
+    else {
+        for (int i = 0; i < tmpvertices.size(); i++) {
+            vertex3d vertex = tmpvertices[i];
+            vertexbuf.push_back(vertex);
+        }   
+    }
+    fclose (objfp);  
+}
+
+void object3d::importvertex3dbuf(const char* fn) {
+    FILE *objfp;
+    char line[64];
+    unsigned int index = 0;
+    float xcrd, ycrd, zcrd;
     vertex3d tpoint;
     objfp = fopen(fn, "r+");
     if (!objfp) return;
     vertexbuf.clear();
-    while (index < num) {
-        {
-            fscanf(objfp, "v %f %f %f\n", &xcrd, &ycrd, &zcrd);
+    while (fgets(line, 64, objfp)) {
+        if (line[0] == 'v' && line[1] == ' ') {
+            sscanf(line, "v %f %f %f\n", &xcrd, &ycrd, &zcrd);
             tpoint.xcoord = xcrd;
             tpoint.ycoord = ycrd;
             tpoint.zcoord = zcrd;
@@ -93,8 +183,9 @@ void object3d::importvertex3dbuf(const char* fn, unsigned int num) {
         }
         index++;
     }
-    fclose(objfp);
+    fclose (objfp);
 }
+
 
 cylinder::cylinder(GLfloat x, GLfloat y, GLfloat z, GLfloat rad, GLfloat hgt, GLfloat vertices) {
     radius = rad;

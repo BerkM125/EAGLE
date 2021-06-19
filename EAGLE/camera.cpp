@@ -23,7 +23,7 @@ float angleincrement = 0.05;
 //"look-at" pointers for camera, trio of x y z coords represents the point at which the camera "focuses" on
 float lx = 2.0f, ly = 0.0f, lz = 0.0f;
 //position of the camera in 3d space, when paired with look-at coordinates it forms 3d vector for camera position and focus
-float camx = 5.0f, camy = 2.0f, camz = 0.0f;
+float camx = 5.0f, camy = 0.0f, camz = 0.0f;
 //perspective variables
 float viewlimit = 100000;
 float viewmin = 1;
@@ -31,6 +31,7 @@ float yfov = 45;
 
 GLfloat swidth = 700;
 GLfloat sheight = 700;
+extern object3d plane, car, ball;
 
 void rendercameraview (void) {
     gluLookAt(camx, camy, camz, camx + lx, camy + ly, camz + lz, 0.0, 1.0f, 0.0);
