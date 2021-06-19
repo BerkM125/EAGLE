@@ -12,12 +12,13 @@ It's pretty self explanatory through the title, yet for clarity's sake EAGLE is 
 
 To be coming soon later. For the time being, EAGLE supports many basic yet useful features, such as:
 
-1) OBJ loading + rendering
+1) Mesh loading + rendering
 2) Camera functionality and vector transformation
 3) 3D figure geometry
 4) 3D transformation
 5) Vertex buffer support
 6) Blending + 4-byte color capability
+7) Shader loading (implementation still buggy, will patch later)
 
 Now, let's take a look at how to use EAGLE to make some 3D graphics.
 
