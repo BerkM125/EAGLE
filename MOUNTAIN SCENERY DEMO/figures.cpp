@@ -10,12 +10,14 @@
 #include <GL/glut.h>
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 //External engine dependencies
 #include "figureslib.hpp"
 #include "cameralib.hpp"
 #include "interfacelib.hpp"
 #include "shaderslib.hpp"
 
+extern std::vector<object3d> sceneassets;
 //Demonstrational purpose grid line rendering
 void gridlines(double step) {
     glBegin(GL_LINES);
@@ -53,6 +55,31 @@ void vertex3d::setvertex3d(GLfloat xcrd, GLfloat ycrd, GLfloat zcrd) {
     xcoord = xcrd;
     ycoord = ycrd;
     zcoord = zcrd;
+}
+
+object3d::object3d() {
+    sceneassets.push_back(*this);
+    this->sceneindice = sceneassets.size()-1;
+    std::cout << sceneindice << " " << sceneassets.size()-1 << std::endl;
+}
+
+void object3d::cloneobj (object3d *n_obj) {
+    n_obj->xcoord = xcoord;
+    /*n_obj->ycoord = ycoord;
+    n_obj->zcoord = zcoord;
+    /*n_obj->objcolor.A = objcolor.A;
+    n_obj->objcolor.R = objcolor.R;
+    n_obj->objcolor.G = objcolor.G;
+    n_obj->objcolor.B = objcolor.B;
+    n_obj->uvbuf.clear();
+    n_obj->vertexbuf.clear();
+    n_obj->normalsbuf.clear();
+    for(int n = 0; n < uvbuf.size(); n++)
+        n_obj->uvbuf.push_back(uvbuf[n]);
+    for(int n = 0; n < vertexbuf.size(); n++)
+        n_obj->vertexbuf.push_back(vertexbuf[n]);
+    for(int n = 0; n < normalsbuf.size(); n++)
+        n_obj->normalsbuf.push_back(normalsbuf[n]);*/
 }
 
 void object3d::pushvertex3f(GLfloat xcoord, GLfloat ycoord, GLfloat zcoord) {
@@ -135,7 +162,7 @@ void object3d::importmesh3d(const char* fn) {
                 }
             }
             else {
-                std::cout << "Face formatting in OBJ went wrong at index " << index << " for " << fn << ", skipping indice..." << std::endl;
+                //std::cout << "Face formatting in OBJ went wrong at index " << index << " for " << fn << ", skipping indice..." << std::endl;
             }
         }
         index++;
@@ -158,9 +185,12 @@ void object3d::importmesh3d(const char* fn) {
         for (int i = 0; i < tmpvertices.size(); i++) {
             vertex3d vertex = tmpvertices[i];
             vertexbuf.push_back(vertex);
-        }   
+        }
     }
-    fclose (objfp);  
+    fclose (objfp);
+    //sceneassets[sceneindice].xcoord = this->xcoord; 
+    //cloneobj(&sceneassets[sceneindice]);
+    std::cout << sceneindice << std::endl;
 }
 
 void object3d::importvertex3dbuf(const char* fn) {
@@ -184,6 +214,7 @@ void object3d::importvertex3dbuf(const char* fn) {
         index++;
     }
     fclose (objfp);
+    cloneobj(&sceneassets[sceneindice]);
 }
 
 

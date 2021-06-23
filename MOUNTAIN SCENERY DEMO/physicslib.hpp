@@ -6,4 +6,5 @@
 class collider {
 public:
 	GLfloat collisionradius;
+	
 };

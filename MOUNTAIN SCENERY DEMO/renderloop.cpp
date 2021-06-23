@@ -9,6 +9,7 @@
 #include <GL/glut.h>
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 //External engine dependencies
 #include "figureslib.hpp"
 #include "cameralib.hpp"
@@ -26,6 +27,7 @@ extern void mainprocess(void);
 GLuint vs = 0;
 GLuint fs = 0;
 GLuint shaderprogram = 0;
+std::vector<object3d> sceneassets;
 
 void renderScene(void) {
     static int direction = 0;

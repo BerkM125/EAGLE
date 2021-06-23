@@ -7,4 +7,4 @@
 #include "cameralib.hpp"
 #include "interfacelib.hpp"
 
-//IN DEVELOPMENT; NOT AVAILABLE YET
+extern std::vector<object3d> sceneassets;

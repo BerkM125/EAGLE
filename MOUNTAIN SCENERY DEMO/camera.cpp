@@ -13,12 +13,12 @@
 #include "cameralib.hpp"
 #include "interfacelib.hpp"
 //angle variable representing camera X and Z vectors in terms of degrees
-float angle = 0.0;
+float angle = 5.0;
 //rotation (yaw, pitch) sensitivity factors for mouse control
 float yawsensitivity = 3.0;
 float pitchsensitivity = 0.8;
 //increment for camera movement
-float movincrement = 2.0;
+float movincrement = 20.0;
 float angleincrement = 0.05;
 //"look-at" pointers for camera, trio of x y z coords represents the point at which the camera "focuses" on
 float lx = 2.0f, ly = 0.0f, lz = 0.0f;

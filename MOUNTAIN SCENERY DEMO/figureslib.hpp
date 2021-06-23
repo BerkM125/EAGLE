@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <iostream>
 #include <vector>
 #define LIMIT 360
 #define PI 3.1415926535897932384626433832795028841971693993751058209749445923
@@ -35,6 +36,10 @@ class vertex2d {
 public:
 	GLfloat xcoord;
 	GLfloat ycoord;
+	vertex2d (GLfloat xcrd = 0, GLfloat ycrd = 0) {
+		xcoord = xcrd;
+		ycoord = ycrd;
+	}
 };
 
 class vertex3d {
@@ -57,9 +62,12 @@ public:
 	GLfloat ycoord;
 	GLfloat zcoord;
 	color4ub objcolor;
+	int sceneindice;
 	std::vector<vertex2d> uvbuf;
 	std::vector<vertex3d> vertexbuf; //not to be confused with a VBO or VAO
 	std::vector<vertex3d> normalsbuf;
+	object3d();
+	void cloneobj (object3d *n_obj);
 	void pushvertex3f(GLfloat xcoord, GLfloat ycoord, GLfloat zcoord);
 	void translateobj3f (GLfloat xmov, GLfloat ymov, GLfloat zmov);
 	void scaleobj3d (GLfloat sf);
