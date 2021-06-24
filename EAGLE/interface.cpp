@@ -14,8 +14,6 @@
 #include "cameralib.hpp"
 #include "interfacelib.hpp"
 
-extern object3d plane, car, ball;
-
 void mainmousecontrol(int xx, int yy) {
     //Put any mouse code and controls you want in here, the code below is simply an example
     mousecameracontrol(xx, yy);
@@ -23,12 +21,12 @@ void mainmousecontrol(int xx, int yy) {
 
 void mainnormalkeycontrol(unsigned char key, int xx, int yy) {
     //Put any normal key code and controls you want in here, the code below is simply an example
-    normalkeycameracontrol(key, xx, yy);
+    //normalkeycameracontrol(key, xx, yy);
 }
 
 void mainarrowkeycontrol(int key, int xx, int yy) {
     //Put any arrow key involving code and controls you want in here, the code below is simply an example
-    arrowkeycameracontrol(key, xx, yy);
+    //arrowkeycameracontrol(key, xx, yy);
 }
 
 void bindmousecontrol (void) {

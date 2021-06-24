@@ -4,11 +4,11 @@
 * Callback functions and function references can be bound to GLUT via the main loop below.
 */
 //Standard libraries
-#define GLEW_STATIC
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 //External engine dependencies
 #include "figureslib.hpp"
 #include "cameralib.hpp"
@@ -23,10 +23,10 @@ extern unsigned int ENABLEFLAGS;
 extern void glsetup(void);
 extern void bindinterface(void);
 extern void mainprocess(void);  
+extern void eventhandler(void);
 GLuint vs = 0;
 GLuint fs = 0;
 GLuint shaderprogram = 0;
-
 void renderScene(void) {
     static int direction = 0;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -34,6 +34,7 @@ void renderScene(void) {
     rendercameraview();
     //DRAWING LOOP HERE: Add any drawing or graphics programming right below here before buffer swap
     mainprocess();
+    eventhandler();
     glutSwapBuffers();
 }
 

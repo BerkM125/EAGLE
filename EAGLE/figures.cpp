@@ -5,17 +5,17 @@
 * of the classes and functions here are located in "figureslib.hpp".
 */
 //Standard libraries
-#define GLEW_STATIC
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <stdio.h>
 #include <iostream>
+#include <vector>
+#include <math.h>
 //External engine dependencies
 #include "figureslib.hpp"
 #include "cameralib.hpp"
 #include "interfacelib.hpp"
 #include "shaderslib.hpp"
-
 //Demonstrational purpose grid line rendering
 void gridlines(double step) {
     glBegin(GL_LINES);
@@ -29,6 +29,16 @@ void gridlines(double step) {
         glVertex3f(100, 0.0f, y);
     }
     glEnd();
+}
+
+//JUST A TASTE OF THE SCENE RENDERING, more customization later
+void renderscene(std::vector<object3d>scene) {
+    for (int n = 0; n < scene.size(); n++) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        scene[n].rendermesh3d(60, 60, 60, 255, GL_TRIANGLES);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        scene[n].rendermesh3d(255, 255, 255, 255, GL_TRIANGLES);
+    }
 }
 
 void RenderString(float x, float y, float z, void* font, const char* string) {
@@ -53,6 +63,39 @@ void vertex3d::setvertex3d(GLfloat xcrd, GLfloat ycrd, GLfloat zcrd) {
     xcoord = xcrd;
     ycoord = ycrd;
     zcoord = zcrd;
+}
+
+object3d::object3d() {
+    //Fill custom
+    xcoord = 0;
+    ycoord = 0;
+    zcoord = 0;
+    sceneindice = 0;
+    objcollider.parentobj = this;
+}
+
+void object3d::addasset(std::vector<object3d>&mscene) {
+    mscene.push_back(*this);
+    sceneindice = mscene.size() - 1;
+}
+
+void object3d::cloneobj (object3d *n_obj) {
+    n_obj->xcoord = xcoord;
+    n_obj->ycoord = ycoord;
+    n_obj->zcoord = zcoord;
+    n_obj->objcolor.A = objcolor.A;
+    n_obj->objcolor.R = objcolor.R;
+    n_obj->objcolor.G = objcolor.G;
+    n_obj->objcolor.B = objcolor.B;
+    n_obj->uvbuf.clear();
+    n_obj->vertexbuf.clear();
+    n_obj->normalsbuf.clear();
+    for(int n = 0; n < uvbuf.size(); n++)
+        n_obj->uvbuf.push_back(uvbuf[n]);
+    for(int n = 0; n < vertexbuf.size(); n++)
+        n_obj->vertexbuf.push_back(vertexbuf[n]);
+    for(int n = 0; n < normalsbuf.size(); n++)
+        n_obj->normalsbuf.push_back(normalsbuf[n]);
 }
 
 void object3d::pushvertex3f(GLfloat xcoord, GLfloat ycoord, GLfloat zcoord) {
@@ -135,7 +178,7 @@ void object3d::importmesh3d(const char* fn) {
                 }
             }
             else {
-                std::cout << "Face formatting in OBJ went wrong at index " << index << " for " << fn << ", skipping indice..." << std::endl;
+                //std::cout << "Face formatting in OBJ went wrong at index " << index << " for " << fn << ", skipping indice..." << std::endl;
             }
         }
         index++;
@@ -158,9 +201,11 @@ void object3d::importmesh3d(const char* fn) {
         for (int i = 0; i < tmpvertices.size(); i++) {
             vertex3d vertex = tmpvertices[i];
             vertexbuf.push_back(vertex);
-        }   
+        }
     }
-    fclose (objfp);  
+    fclose (objfp);
+    //sceneassets[sceneindice].xcoord = this->xcoord; 
+    //cloneobj(&sceneassets[sceneindice]);
 }
 
 void object3d::importvertex3dbuf(const char* fn) {
@@ -184,8 +229,52 @@ void object3d::importvertex3dbuf(const char* fn) {
         index++;
     }
     fclose (objfp);
+    //cloneobj(&sceneassets[sceneindice]);
 }
 
+void collider::generatehitbox(void) {
+    vertex3d minv, maxv;
+    minv = parentobj->vertexbuf[0];
+    maxv = parentobj->vertexbuf[parentobj->vertexbuf.size() - 1];
+    for (int n = 0; n < parentobj->vertexbuf.size(); n++) {
+        if (parentobj->vertexbuf[n].xcoord < minv.xcoord) minv.xcoord = parentobj->vertexbuf[n].xcoord;
+        if (parentobj->vertexbuf[n].ycoord < minv.ycoord) minv.ycoord = parentobj->vertexbuf[n].ycoord;
+        if (parentobj->vertexbuf[n].zcoord < minv.zcoord) minv.zcoord = parentobj->vertexbuf[n].zcoord;
+        if (parentobj->vertexbuf[n].xcoord > maxv.xcoord) maxv.xcoord = parentobj->vertexbuf[n].xcoord;
+        if (parentobj->vertexbuf[n].ycoord > maxv.ycoord) maxv.ycoord = parentobj->vertexbuf[n].ycoord;
+        if (parentobj->vertexbuf[n].zcoord > maxv.zcoord) maxv.zcoord = parentobj->vertexbuf[n].zcoord;
+    }
+    hitboxcorner = minv;
+    hitboxcorner2 = maxv;
+    //Optional rendering of hitbox corner-to-corner vector
+    /*glBegin(GL_LINES);
+    glVertex3f(hitboxcorner.xcoord, hitboxcorner.ycoord, hitboxcorner.zcoord);
+    glVertex3f(hitboxcorner2.xcoord, hitboxcorner2.ycoord, hitboxcorner2.zcoord);
+    glEnd();
+    std::cout << hitboxcorner.xcoord << " " << hitboxcorner.ycoord << " " << hitboxcorner.zcoord << std::endl;
+    std::cout << hitboxcorner2.xcoord << " " << hitboxcorner2.ycoord << " " << hitboxcorner2.zcoord << std::endl;*/
+}
+
+bool collider::firecollisioncheck(std::vector<object3d>physcene) {
+    std::cout << "entered\n";
+    if (parentobj == NULL) {
+        std::cout << "ERROR: PARENT OBJ IS NULL, RETURNING FALSE..." << std::endl;
+        return false;
+    }
+    generatehitbox();
+    for (int n = 0; n < physcene.size(); n++) {
+        physcene[n].objcollider.generatehitbox();
+        if ((parentobj->objcollider.hitboxcorner.xcoord >= physcene[n].objcollider.hitboxcorner.xcoord && parentobj->objcollider.hitboxcorner.xcoord <= physcene[n].objcollider.hitboxcorner2.xcoord) || (parentobj->objcollider.hitboxcorner2.xcoord >= physcene[n].objcollider.hitboxcorner.xcoord && parentobj->objcollider.hitboxcorner2.xcoord <= physcene[n].objcollider.hitboxcorner2.xcoord)) {
+            if ((parentobj->objcollider.hitboxcorner.ycoord >= physcene[n].objcollider.hitboxcorner.ycoord && parentobj->objcollider.hitboxcorner.ycoord <= physcene[n].objcollider.hitboxcorner2.ycoord) || (parentobj->objcollider.hitboxcorner2.ycoord >= physcene[n].objcollider.hitboxcorner.ycoord && parentobj->objcollider.hitboxcorner2.ycoord <= physcene[n].objcollider.hitboxcorner2.ycoord)) {
+                if ((parentobj->objcollider.hitboxcorner.zcoord >= physcene[n].objcollider.hitboxcorner.zcoord && parentobj->objcollider.hitboxcorner.zcoord <= physcene[n].objcollider.hitboxcorner2.zcoord) || (parentobj->objcollider.hitboxcorner2.zcoord >= physcene[n].objcollider.hitboxcorner.zcoord && parentobj->objcollider.hitboxcorner2.zcoord <= physcene[n].objcollider.hitboxcorner2.zcoord)) {
+                    std::cout << "Collision occurred, traceback to scene indice #" << n << std::endl;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
 cylinder::cylinder(GLfloat x, GLfloat y, GLfloat z, GLfloat rad, GLfloat hgt, GLfloat vertices) {
     radius = rad;

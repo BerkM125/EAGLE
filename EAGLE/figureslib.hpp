@@ -9,12 +9,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <iostream>
 #include <vector>
+
 #define LIMIT 360
 #define PI 3.1415926535897932384626433832795028841971693993751058209749445923
 #define BUFSIZE 32
 #define GENTYPE_VBUF 1
 #define GENTYPE_DRAW 2
+
+class object3d;
+class vertex3d;
+typedef std::vector<object3d> sceneobj;
 
 class color4ub {
 public:
@@ -35,6 +41,10 @@ class vertex2d {
 public:
 	GLfloat xcoord;
 	GLfloat ycoord;
+	vertex2d (GLfloat xcrd = 0, GLfloat ycrd = 0) {
+		xcoord = xcrd;
+		ycoord = ycrd;
+	}
 };
 
 class vertex3d {
@@ -47,7 +57,21 @@ public:
 		ycoord = ycrd;
 		zcoord = zcrd;
 	}
+	vertex3d(const vertex3d& nv) {
+		xcoord = nv.xcoord;
+		ycoord = nv.ycoord;
+		zcoord = nv.zcoord;
+	}
 	void setvertex3d(GLfloat xcrd, GLfloat ycrd, GLfloat zcrd);
+};
+
+class collider {
+public:
+	vertex3d hitboxcorner;
+	vertex3d hitboxcorner2;
+	object3d* parentobj;
+	bool firecollisioncheck(std::vector<object3d>physcene);
+	void generatehitbox(void);
 };
 
 class object3d {
@@ -57,9 +81,14 @@ public:
 	GLfloat ycoord;
 	GLfloat zcoord;
 	color4ub objcolor;
+	collider objcollider;
+	int sceneindice;
 	std::vector<vertex2d> uvbuf;
 	std::vector<vertex3d> vertexbuf; //not to be confused with a VBO or VAO
 	std::vector<vertex3d> normalsbuf;
+	object3d();
+	void cloneobj (object3d *n_obj);
+	void addasset(std::vector<object3d>& mscene);
 	void pushvertex3f(GLfloat xcoord, GLfloat ycoord, GLfloat zcoord);
 	void translateobj3f (GLfloat xmov, GLfloat ymov, GLfloat zmov);
 	void scaleobj3d (GLfloat sf);
@@ -120,4 +149,5 @@ public:
 
 extern void RenderString(float x, float y, float z, void* font, const char* string);
 extern void gridlines(double step);
+extern void renderscene(std::vector<object3d>scene);
 GLuint LoadTexture(const char* filename);

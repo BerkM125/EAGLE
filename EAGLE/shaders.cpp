@@ -1,5 +1,4 @@
 //Standard libraries
-#define GLEW_STATIC
 #include <GL/glew.h>
 #include <GL/glut.h>
 
@@ -18,7 +17,7 @@ void bindvertexbuffer(GLuint* vao, GLuint* vbo, GLfloat *vertexbuf) {
     //Vertex buffer
     glGenBuffers(1, vbo);
     glBindBuffer(GL_ARRAY_BUFFER, *vbo);
-    glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), vertexbuf, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexbuf), vertexbuf, GL_STATIC_DRAW);
     //Vertex array
     glGenVertexArrays(1, vao);
     glBindVertexArray(*vao);
