@@ -1,4 +1,4 @@
-# EAGLE
+# EAGLE [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FBerkM125%2FEAGLE&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 Easy A** Game & graphics Library and Engine (OpenGL). Cross platform graphics engine for simple graphics.
 ## Some quick prerequisites
 EAGLE is written in pure C++ and OpenGL with the GLUT/FreeGLUT library, and built with a shell script requiring g++. 
