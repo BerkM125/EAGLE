@@ -19,13 +19,5 @@ To be coming soon later. For the time being, EAGLE supports many basic yet usefu
 5) Vertex buffer support
 6) Blending + 4-byte color capability
 7) Shader loading (implementation still buggy, will patch later)
-
-Now, let's take a look at how to use EAGLE to make some 3D graphics.
-
-## Structure 
-Before doing anything with EAGLE, you should have an idea of how the EAGLE engine actually works. The structure of the EAGLE engine consists of freely edited files (these are the files where the programmer writes whatever they need to for their game), semi-freely editable files (though still surface level, these files involve a bit more core functionality than a purely freely editable file, and they can still be edited by the programmer), deeper core graphics and engine class files (these files are advised to be untouched, but if the programmer is confident in their ability they can feel free to edit and "hack" these files however they want), header files, and build file(s). Let's start by looking at some of the freely editable files:
-### gameprocess.cpp
-
-### interface.cpp
-
-### camera.cpp
+8) Basic collision detection
+9) Basic texturing and texture mapping
