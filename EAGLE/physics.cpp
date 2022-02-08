@@ -1,10 +1,12 @@
 //Standard libraries
-#include <GL/glut.h>
+#include <GL/glew.h>
+#include <GL/freeglut.h>
 #include <stdio.h>
 #include <iostream>
+#include <vector>
+#include <math.h>
 //External engine dependencies
-#include "figureslib.hpp"
+#include "vectorlib.hpp"
 #include "cameralib.hpp"
 #include "interfacelib.hpp"
-
-//IN DEVELOPMENT; NOT AVAILABLE YET
+#include "shaderslib.hpp"

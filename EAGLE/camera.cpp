@@ -1,29 +1,30 @@
 /*
 * CAMERA FUNCTIONALITY IN 3D SPACE CPP FILE
 * Contains variables and functions pertaining to the functionality
-* of many aspects of the engine camera. External declarations of 
+* of many aspects of the engine camera. External declarations of
 * the contained variables and functions are located in "cameralib.hpp".
 */
 //Standard libraries
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <stdio.h>
 #include <iostream>
 //External engine dependencies
-#include "figureslib.hpp"
+#include "vectorlib.hpp"
 #include "cameralib.hpp"
 #include "interfacelib.hpp"
+#include "lightinglib.hpp"
 //angle variable representing camera X and Z vectors in terms of degrees
-float angle = 5.0;
+float angle = 0.5;
 //rotation (yaw, pitch) sensitivity factors for mouse control
 float yawsensitivity = 3.0;
 float pitchsensitivity = 0.8;
 //increment for camera movement
-float movincrement = 5.0;
+float movincrement = 20.0;
 float angleincrement = 0.05;
 //"look-at" pointers for camera, trio of x y z coords represents the point at which the camera "focuses" on
 float lx = 2.0f, ly = 0.0f, lz = 0.0f;
 //position of the camera in 3d space, when paired with look-at coordinates it forms 3d vector for camera position and focus
-float camx = 5.0f, camy = 2.0f, camz = 0.0f;
+float camx = 10.0f, camy = 10.0f, camz = 0.0f;
 //perspective variables
 float viewlimit = 100000;
 float viewmin = 1;
@@ -31,9 +32,8 @@ float yfov = 45;
 
 GLfloat swidth = 700;
 GLfloat sheight = 700;
-extern object3d plane, car, ball;
 
-void rendercameraview (void) {
+void rendercameraview(void) {
     gluLookAt(camx, camy, camz, camx + lx, camy + ly, camz + lz, 0.0, 1.0f, 0.0);
 }
 
@@ -67,6 +67,7 @@ void mousecameracontrol(int xx, int yy) {
         px = x1;
         py = y1;
     }
+
     return;
 }
 

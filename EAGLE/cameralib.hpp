@@ -1,5 +1,5 @@
 //Standard libraries
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <stdio.h>
 #include <iostream>
 //.hpp library for external dependencies, do not tamper
