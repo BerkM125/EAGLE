@@ -1,3 +1,0 @@
-C:\Users\Berkan\Desktop\OpenGLRoot\EAGLE updated\Release\EAGLE.vcxproj.CopyComplete
-C:\Users\Berkan\Desktop\OpenGLRoot\EAGLE updated\Release\EAGLE.exe
-C:\Users\Berkan\Desktop\OpenGLRoot\EAGLE updated\Release\freeglut.dll
