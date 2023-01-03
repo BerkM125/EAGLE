@@ -3,7 +3,7 @@ Easy A** Game & graphics Library and Engine (OpenGL). Cross platform graphics en
 ## Some quick prerequisites
 EAGLE is written in pure C++ and OpenGL with the GLUT/FreeGLUT library, and built with a shell script requiring g++. 
 ## What is EAGLE?
-It's pretty self explanatory through the title, yet for clarity's sake EAGLE is a highly convenient yet powerful graphics library and engine that can be used to make 3d graphics, games, and animations. Being that it's been developed for only around 2 days (6/15/21), EAGLE is still in its basic and development stages, with many of its planned features, namely:
+It's pretty self explanatory through the title, yet for clarity's sake EAGLE is a highly convenient yet powerful graphics library and engine that can be used to make 3d graphics, games, and animations. EAGLE is still in its basic and development stages, with many of its planned features, namely:
 
 1) Physics engine
 2) GUI + Editor
